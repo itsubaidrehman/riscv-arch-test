@@ -178,8 +178,8 @@ lr_sc_basic-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq != 0x1": 0       #no aq flag used
-    "mnemonic == 'sc.w' and rl != 0x1": 0       #no rl flag used
+    "mnemonic == 'lr.w' and aq != 0x1": 0      
+    "mnemonic == 'sc.w' and rl != 0x1": 0       
   val_comb:
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val: 0
     mnemonic == 'sc.w' and rs2_val == get_mem_val(rs1_val, 4) and rd_val == 0: 0
@@ -192,8 +192,8 @@ lr_aq_sc-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x1": 0       #no aq flag used
-    "mnemonic == 'sc.w' and rl != 0x1": 0       #no rl flag used
+    "mnemonic == 'lr.w' and aq == 0x1": 0      
+    "mnemonic == 'sc.w' and rl != 0x1": 0      
   val_comb:
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val: 0
     mnemonic == 'sc.w' and rs2_val == get_mem_val(rs1_val, 4) and rd_val == 0: 0
@@ -206,8 +206,8 @@ lr_sc_rl-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq != 0x1": 0       #no aq flag used
-    "mnemonic == 'sc.w' and rl == 0x1": 0       #no rl flag used
+    "mnemonic == 'lr.w' and aq != 0x1": 0      
+    "mnemonic == 'sc.w' and rl == 0x1": 0       
   val_comb:
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val: 0
     mnemonic == 'sc.w' and rs2_val == get_mem_val(rs1_val, 4) and rd_val == 0: 0
@@ -220,8 +220,8 @@ lr_aq_sc_rl-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x1": 0       #no aq flag used
-    "mnemonic == 'sc.w' and rl == 0x1": 0       #no rl flag used
+    "mnemonic == 'lr.w' and aq == 0x1": 0      
+    "mnemonic == 'sc.w' and rl == 0x1": 0       
   val_comb:
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val: 0
     mnemonic == 'sc.w' and rs2_val == get_mem_val(rs1_val, 4) and rd_val == 0: 0
@@ -236,8 +236,8 @@ sc_sw-01:
     sc.w: 0
     sw: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x0": 0       #aq flag used
-    "mnemonic == 'sc.w' and rl == 0x0": 0       #no rl flag used
+    "mnemonic == 'lr.w' and aq == 0x0": 0      
+    "mnemonic == 'sc.w' and rl == 0x0": 0       
   val_comb:
     #reservation successfull - it should hit 2 times
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val  : 0
@@ -255,8 +255,8 @@ sc_between_lrsc-01:
     sc.w: 0
     
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x0": 0       #no aq flag used
-    "mnemonic == 'sc.w' and rl == 0x1": 0       #no rl flag used  
+    "mnemonic == 'lr.w' and aq == 0x0": 0      
+    "mnemonic == 'sc.w' and rl == 0x1": 0       
   val_comb:
     #reservation failed - it should hit 3 times
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val  : 0
@@ -271,8 +271,8 @@ sc_unreserved_addr-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x0": 0       #no aq flag used
-    "mnemonic == 'sc.w' and rl == 0x0": 0       #no rl flag used  
+    "mnemonic == 'lr.w' and aq == 0x0": 0      
+    "mnemonic == 'sc.w' and rl == 0x0": 0        
   val_comb:
     #reservation failed - it should hit 3 times
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val  : 0
@@ -288,8 +288,8 @@ lr_misaligned-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x0": 0       #no aq flag used
-    "mnemonic == 'sc.w' and rl == 0x0": 0       #no rl flag used  
+    "mnemonic == 'lr.w' and aq == 0x0": 0       
+    "mnemonic == 'sc.w' and rl == 0x0": 0       
   csr_comb:
     #misaligned store/amo fault -- it should hit 3 times
     mcause == 0x06: 0

@@ -339,3 +339,136 @@ amomaxu.d:
       <<: [*base_rs2val_sgn]
       abstract_comb:
         <<: [*rs2val_walking]
+        
+        
+        
+
+lr_sc_basic-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+  op_comb:
+    "mnemonic == 'lr.d' and aq != 0x1": 0       
+    "mnemonic == 'sc.d' and rl != 0x1": 0       
+  val_comb:
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
+    
+    
+lr_aq_sc-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+  op_comb:
+    "mnemonic == 'lr.d' and aq == 0x1": 0       
+    "mnemonic == 'sc.d' and rl != 0x1": 0       
+  val_comb:
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
+    
+    
+lr_sc_rl-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+  op_comb:
+    "mnemonic == 'lr.d' and aq != 0x1": 0       
+    "mnemonic == 'sc.d' and rl == 0x1": 0       
+  val_comb:
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
+    
+lr_aq_sc_rl-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+  op_comb:
+    "mnemonic == 'lr.d' and aq == 0x1": 0      
+    "mnemonic == 'sc.d' and rl == 0x1": 0       
+  val_comb:
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
+    
+
+sc_sw-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+    sw: 0
+  op_comb:
+    "mnemonic == 'lr.d' and aq == 0x0": 0      
+    "mnemonic == 'sc.d' and rl == 0x0": 0     
+  val_comb:
+    #reservation successfull - it should hit 2 times
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val  : 0
+    #check store word successfull? imm_val is zero.
+    mnemonic == 'sw' and get_mem_val(rs1_val, 4) == rs2_val : 0
+    #rd -> 0 on sc -- it should hit 2 times
+    mnemonic == 'sc.d' and get_mem_val(rs1_val, 8) == rs2_val and rd_val==0: 0
+
+
+sc_between_lrsc-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+    
+  op_comb:
+    "mnemonic == 'lr.d' and aq == 0x0": 0       
+    "mnemonic == 'sc.d' and rl == 0x1": 0        
+  val_comb:
+    #reservation failed - it should hit 3 times
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val  : 0
+    #rd -> 1 on sc -- it should hit 3 times
+    mnemonic == 'sc.d' and get_mem_val(rs1_val, 8) != rs2_val and rd_val==1: 0
+    
+    
+sc_unreserved_addr-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+  op_comb:
+    "mnemonic == 'lr.d' and aq == 0x0": 0     
+    "mnemonic == 'sc.d' and rl == 0x0": 0      
+  val_comb:
+    #reservation failed - it should hit 3 times
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val  : 0
+    #rd -> 1 on sc -- it should hit 3 times
+    mnemonic == 'sc.d' and get_mem_val(rs1_val, 8) != rs2_val and rd_val==1: 0
+    
+    
+
+    
+    
+lr_misaligned-01:
+  config:
+    - check ISA:=regex(.*64.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+  mnemonics:
+    lr.d: 0
+    sc.d: 0
+  op_comb:
+    "mnemonic == 'lr.d' and aq == 0x0": 0       
+    "mnemonic == 'sc.d' and rl == 0x0": 0        
+  csr_comb:
+    #misaligned store/amo fault -- it should hit 3 times
+    mcause == 0x06: 0
+  val_comb:
+    #reservation failed - it should hit 3 times
+    mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) != rd_val  : 0
+    #rd -> 1 on sc -- it should hit 3 times
+    mnemonic == 'sc.d' and get_mem_val(rs1_val, 8) != rs2_val and rd_val!=0: 0
+    
+
