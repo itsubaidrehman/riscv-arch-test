@@ -360,6 +360,173 @@ Mend_PMP:                                    ;\
       addi origptr, sigptr, offset-REGWIDTH /* Calculate where orig AMO src is stored */ ;\
       inst destreg, reg2, (origptr) /*origval -> destreg; updated val -> (origptr) */ ;\
       RVTEST_SIGUPD(sigptr, destreg) /* write original AMO val */
+      
+      
+// Tests for LR/SC instruction
+#define TEST_LR_SC_OP(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply random immediate value to base address */ ;\
+    lr.w destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg, MASK_XLEN(storeval)*/ ;\
+    sc.w destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+
+
+#define TEST_LR_AQ_SC_OP(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply random immediate value to base address */ ;\
+    lr.w.aq destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg, MASK_XLEN(storeval)*/ ;\
+    sc.w destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+
+#define TEST_LR_SC_RL_OP(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply random immediate value to base address */ ;\
+    lr.w destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg, MASK_XLEN(storeval)*/ ;\
+    sc.w.rl destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+
+
+#define TEST_LR_AQ_SC_RL_OP(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply random immediate value to base address */ ;\
+    lr.w.aq destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg, MASK_XLEN(storeval)*/ ;\
+    sc.w.rl destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+    
+    
+#define TEST_LR_SC_SW_OP(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply dynamic immval to base address */ ;\
+    lr.w destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI( tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg */ ;\
+    sw tempreg, (addrreg)                                                                ;\
+    sc.w destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+    
+#define TEST_LR_SC_DIFF_ADDR_OP(destreg1, destreg2, addrreg, loadreg, tempreg, storeval, sigptr, immval1, immval2) ;\
+    LA(addrreg, rvtest_data)                      /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval1                /* Apply first immval to base address */ ;\
+    lr.w loadreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI( loadreg, MASK_XLEN(storeval))               /* Load immediate value */ ;\
+    addi tempreg, addrreg, immval2                /* Calculate second address with different immval */ ;\
+    sc.w destreg1, loadreg, (tempreg)            /* Store-Conditional to second address */ ;\
+    sc.w.rl destreg2, loadreg, (addrreg)            /* Store-Conditional to first address */ ;\
+    RVTEST_SIGUPD(sigptr, destreg1)              /* Log success/failure of sc.w */ ;\
+    lw loadreg, (tempreg)                       /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, loadreg)               /* Log loaded value */;\
+    RVTEST_SIGUPD(sigptr, destreg2)              /* Log success/failure of sc.w */ ;\
+    lw loadreg, (addrreg)                       /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, loadreg)               /* Log loaded value */
+
+
+#define TEST_LR_SC_UNRES_ADDR_OP(destreg, addrreg, loadreg, storeval, sigptr, immval1, immval2) ;\
+    LA(addrreg, rvtest_data)                      /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval1                /* Apply first immval to base address */ ;\
+    lr.w loadreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI( loadreg, MASK_XLEN(storeval))               /* Load immediate value */ ;\
+    addi addrreg, addrreg, immval2                /* Calculate second address with different immval */ ;\
+    sc.w destreg, loadreg, (addrreg)            /* Store-Conditional to first address */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)              /* Log success/failure of sc.w */ ;\
+    lw loadreg, (addrreg)                       /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, loadreg)               /* Log loaded value */
+
+
+
+    
+#define TEST_LR_SC_OP_D(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply dynamic immval to base address */ ;\
+    lr.d destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg */ ;\
+    sc.d destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+
+
+#define TEST_LR_AQ_SC_OP_D(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply random immediate value to base address */ ;\
+    lr.d.aq destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg, MASK_XLEN(storeval)*/ ;\
+    sc.d destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+
+#define TEST_LR_SC_RL_OP_D(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply random immediate value to base address */ ;\
+    lr.d destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg, MASK_XLEN(storeval)*/ ;\
+    sc.d.rl destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+
+
+#define TEST_LR_AQ_SC_RL_OP_D(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply random immediate value to base address */ ;\
+    lr.d.aq destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI(tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg, MASK_XLEN(storeval)*/ ;\
+    sc.d.rl destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+    
+#define TEST_LR_SC_SW_OP_D(destreg, tempreg, addrreg, storeval, sigptr, immval) ;\
+    LA(addrreg, rvtest_data)                        /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval                 /* Apply dynamic immval to base address */ ;\
+    lr.d destreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI( tempreg, MASK_XLEN(storeval))              /* Load immediate value into tempreg */ ;\
+    sw tempreg, (addrreg)                                                                ;\
+    sc.d destreg, tempreg, (addrreg)              /* Store-Conditional: Attempt store */ ;\
+    RVTEST_SIGUPD(sigptr, destreg)                /* Log success/failure of sc.w */ ;\
+    lw tempreg, (addrreg)                         /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, tempreg)                /* Log loaded value */
+    
+    
+    
+#define TEST_LR_SC_DIFF_ADDR_OP_D(destreg1, destreg2, addrreg, loadreg, tempreg, storeval, sigptr, immval1, immval2) ;\
+    LA(addrreg, rvtest_data)                      /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval1                /* Apply first immval to base address */ ;\
+    lr.d loadreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI( loadreg, MASK_XLEN(storeval))               /* Load immediate value */ ;\
+    addi tempreg, addrreg, immval2                /* Calculate second address with different immval */ ;\
+    sc.d destreg1, loadreg, (tempreg)            /* Store-Conditional to second address */ ;\
+    sc.d.rl destreg2, loadreg, (addrreg)            /* Store-Conditional to first address */ ;\
+    RVTEST_SIGUPD(sigptr, destreg1)              /* Log success/failure of sc.w */ ;\
+    lw loadreg, (tempreg)                       /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, loadreg)               /* Log loaded value */;\
+    RVTEST_SIGUPD(sigptr, destreg2)              /* Log success/failure of sc.w */ ;\
+    lw loadreg, (addrreg)                       /* Load value from memory */;\
+    RVTEST_SIGUPD(sigptr, loadreg)               /* Log loaded value */
+
+
+#define TEST_LR_SC_UNRES_ADDR_OP_D(destreg2, addrreg, loadreg, storeval, sigptr, immval1, immval2) ;\
+    LA(addrreg, rvtest_data)                      /* Load base address of test data */ ;\
+    addi addrreg, addrreg, immval1                /* Apply first immval to base address */ ;\
+    lr.d loadreg, (addrreg)                       /* Load-Reserved from memory */ ;\
+    LI( loadreg, MASK_XLEN(storeval))               /* Load immediate value */ ;\
+    addi addrreg, addrreg, immval2                /* Calculate second address with different immval */ ;\
+    sc.d destreg2, loadreg, (addrreg)            /* Store-Conditional to first address */ ;\
+    RVTEST_SIGUPD(sigptr, destreg2)              /* Log success/failure of sc.w */ ;\
+    RVTEST_SIGUPD(sigptr, loadreg)               /* Log loaded value */
+
 
 
 #define NAN_BOXED(__val__,__width__,__max__)	;\
