@@ -173,7 +173,7 @@ amomaxu.w:
 
 lr_sc_basic-01:
   config:
-    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*); 
   mnemonics:
     lr.w: 0
     sc.w: 0
@@ -187,7 +187,7 @@ lr_sc_basic-01:
     
 lr_aq_sc-01:
   config:
-    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*); 
   mnemonics:
     lr.w: 0
     sc.w: 0
@@ -201,7 +201,7 @@ lr_aq_sc-01:
     
 lr_sc_rl-01:
   config:
-    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*); 
   mnemonics:
     lr.w: 0
     sc.w: 0
@@ -215,7 +215,7 @@ lr_sc_rl-01:
     
 lr_aq_sc_rl-01:
   config:
-    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*); 
   mnemonics:
     lr.w: 0
     sc.w: 0
@@ -230,7 +230,7 @@ lr_aq_sc_rl-01:
 
 sc_sw-01:
   config:
-    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*); 
   mnemonics:
     lr.w: 0
     sc.w: 0
@@ -249,7 +249,7 @@ sc_sw-01:
 
 sc_between_lrsc-01:
   config:
-    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*); 
   mnemonics:
     lr.w: 0
     sc.w: 0
@@ -266,7 +266,7 @@ sc_between_lrsc-01:
     
 sc_unreserved_addr-01:
   config:
-    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True;
+    - check ISA:=regex(.*32.*);check ISA:=regex(.*I.*A); 
   mnemonics:
     lr.w: 0
     sc.w: 0
