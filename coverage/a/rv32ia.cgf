@@ -192,10 +192,12 @@ lr_aq_sc-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x1": 0      
-    "mnemonic == 'sc.w' and rl != 0x1": 0      
+    "mnemonic == 'lr.w' and aq == 0x1": 0          # aq flag is high   
+    "mnemonic == 'sc.w' and rl != 0x1": 0          # rl flag is zero     
   val_comb:
+    # lr loads the value and reserves the addr
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val: 0
+    # sc should store the value on the reserved addr
     mnemonic == 'sc.w' and rs2_val == get_mem_val(rs1_val, 4) and rd_val == 0: 0
     
     
@@ -206,10 +208,12 @@ lr_sc_rl-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq != 0x1": 0      
-    "mnemonic == 'sc.w' and rl == 0x1": 0       
+    "mnemonic == 'lr.w' and aq != 0x1": 0            # aq flag is zero
+    "mnemonic == 'sc.w' and rl == 0x1": 0            # rl flag is high
   val_comb:
+    # lr loads the value and reserves the addr
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val: 0
+    # sc should store the value on the reserved addr
     mnemonic == 'sc.w' and rs2_val == get_mem_val(rs1_val, 4) and rd_val == 0: 0
     
     
@@ -220,10 +224,12 @@ lr_aq_sc_rl-01:
     lr.w: 0
     sc.w: 0
   op_comb:
-    "mnemonic == 'lr.w' and aq == 0x1": 0      
-    "mnemonic == 'sc.w' and rl == 0x1": 0       
+    "mnemonic == 'lr.w' and aq == 0x1": 0            # aq flag is high  
+    "mnemonic == 'sc.w' and rl == 0x1": 0            # rl flag is high   
   val_comb:
+    # lr loads the value and reserves the addr 
     mnemonic == 'lr.w' and get_mem_val(rs1_val, 4) == rd_val: 0
+    # sc should store the value on the reserved addr
     mnemonic == 'sc.w' and rs2_val == get_mem_val(rs1_val, 4) and rd_val == 0: 0
     
 

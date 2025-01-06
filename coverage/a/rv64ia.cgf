@@ -350,10 +350,12 @@ lr_sc_basic-01:
     lr.d: 0
     sc.d: 0
   op_comb:
-    "mnemonic == 'lr.d' and aq != 0x1": 0       
-    "mnemonic == 'sc.d' and rl != 0x1": 0       
+    "mnemonic == 'lr.d' and aq != 0x1": 0           # aq flag is low    
+    "mnemonic == 'sc.d' and rl != 0x1": 0           # rl flag is low      
   val_comb:
+    # load the data from the addr and reserves the addr
     mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    # successful store to the reserved addr
     mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
     
     
@@ -364,10 +366,12 @@ lr_aq_sc-01:
     lr.d: 0
     sc.d: 0
   op_comb:
-    "mnemonic == 'lr.d' and aq == 0x1": 0       
-    "mnemonic == 'sc.d' and rl != 0x1": 0       
+    "mnemonic == 'lr.d' and aq == 0x1": 0          # aq flag is high 
+    "mnemonic == 'sc.d' and rl != 0x1": 0          # rl flag is low
   val_comb:
+    # load the data from the addr and reserves the addr
     mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    # successful store to the reserved addr
     mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
     
     
@@ -378,10 +382,12 @@ lr_sc_rl-01:
     lr.d: 0
     sc.d: 0
   op_comb:
-    "mnemonic == 'lr.d' and aq != 0x1": 0       
-    "mnemonic == 'sc.d' and rl == 0x1": 0       
+    "mnemonic == 'lr.d' and aq != 0x1": 0           # aq flag is low     
+    "mnemonic == 'sc.d' and rl == 0x1": 0           # rl flag is high    
   val_comb:
+    # load the data from the addr and reserves the addr
     mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    # successful store to the reserved addr
     mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
     
 lr_aq_sc_rl-01:
@@ -391,10 +397,12 @@ lr_aq_sc_rl-01:
     lr.d: 0
     sc.d: 0
   op_comb:
-    "mnemonic == 'lr.d' and aq == 0x1": 0      
-    "mnemonic == 'sc.d' and rl == 0x1": 0       
+    "mnemonic == 'lr.d' and aq == 0x1": 0            # aq flag is high   
+    "mnemonic == 'sc.d' and rl == 0x1": 0            # rl flag is high     
   val_comb:
+    # load the data from the addr and reserves the addr
     mnemonic == 'lr.d' and get_mem_val(rs1_val, 8) == rd_val: 0
+    # successful store to the reserved addr
     mnemonic == 'sc.d' and rs2_val == get_mem_val(rs1_val, 8) and rd_val == 0: 0
     
 
