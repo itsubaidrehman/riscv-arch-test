@@ -1,3 +1,10 @@
+# coverpoint for fence
+fence:
+  config: 
+    - check ISA:=regex(.*I.*)
+  mnemonics: 
+    fence: 0
+
 # coverpoint for add instruction
 add:
     config:                           # specifies the configurations under which this particular covergroup is applicable
