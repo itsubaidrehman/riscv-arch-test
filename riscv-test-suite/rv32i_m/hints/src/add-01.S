@@ -33,9 +33,6 @@ inst_0:
 // opcode: add ; op1:x0 op2:x24; dest:x24; op1val:0x7fffffff;  op2val:0x1
 TEST_RR_OP(add,x0, x4, x24, 0x80000000, 0x7fffffff, 0x1, x3, 0, x18)
 
-RVTEST_SIGBASE( x30,signature_x30_1)
-TEST_STORE_GPRS_AND_STATUS(x30)
-
 inst_1:
 // opcode: add ; op1:x0; op2:x10; dest:x28; op1val:0x20000;  op2val:0x20000
 TEST_RR_OP(add,x0, x10, x10, 0x40000, 0x20000, 0x20000, x3, 4, x18)

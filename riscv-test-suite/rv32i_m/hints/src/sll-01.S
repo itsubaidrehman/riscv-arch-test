@@ -22,11 +22,11 @@ RVTEST_CODE_BEGIN
 
 RVTEST_CASE(0,"//check ISA:=regex(.*32.*);check ISA:=regex(.*I.*Zicsr);def TEST_CASE_1=True;",sll)
 
-RVTEST_SIGBASE( x3,signature_x3_1)
-
-
+RVTEST_INIT_GPRS
 RVTEST_SIGBASE( x31,signature_x31_1)
 TEST_STORE_GPRS_AND_STATUS(x31)
+
+RVTEST_SIGBASE( x3,signature_x3_1)
 
 inst_0:
 // opcode: sll ; op1:x16; op2:x28; dest:x28; op1val:-0x81;  op2val:0xa
